@@ -1,0 +1,30 @@
+<% include ./base/header %> 
+        <h1>
+            Participantes Grupo <%= idGrupo %>
+            <a id="imprimir" class="btn float-right">Imprimir</a>
+        </h1>
+        <div >
+            <ul id="lista">
+            </ul>
+        </div>
+    <script>
+        let _d = document;
+        let _integrantes = "<%= integrantes %>".split(',');
+
+        _integrantes.forEach(item => {
+            let _li = _d.createElement("li");
+            let _dados = item.split(";");
+            
+            _li.className ="list-group-item";
+            _li.innerText = `${_dados[0]}`;
+
+            _d.querySelector("#lista").appendChild(_li);
+        });
+
+        $("#imprimir").click(function(){
+            window.print();
+        })
+
+
+    </script>
+<% include ./base/footer %> 

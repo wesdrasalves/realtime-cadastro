@@ -1,0 +1,98 @@
+        <% include ./base/header %> 
+        <div id="message" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span></span> 
+            <button type="button" class="close" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <div class="row">
+            <div id="grupos" >
+            </div>
+            <div class="totalizador">
+                <div>
+                    <label>Grupos </label>
+                    <label id="totalArquivo" class="totalizador-item"><%= totalArquivo %></label>
+                </div>
+                <div>
+                    <label>Inscrições</label>
+                    <label id="inscritos" class="totalizador-item"><%= inscritos %></label>
+                </div>
+            </div>
+            <div id="cadastro">
+                <div id="corCadastrando"></div>
+                <div>
+                    <label>Nome</label>
+                    <input type="text" id="nome" name="nome"/>
+                </div>           
+                <div>
+                    <label>É Cristão: </label>
+                    <input type="checkbox" id="cristao" name="cristao"/>
+                </div>
+                <button type="button"  class="btn btn-primary" id="salvar">Adicionar</button>
+            </div>
+        </div>
+    <script>
+        let _d = document;
+        let _cores = "<%= cores %>".split(",");
+        let _corSelecionada;
+        var socket = io("<%= Ip %>");
+
+        $("#message").hide();
+
+        function updateCorSelecionada()
+        {
+            let _index = 0;
+
+            if(_d.querySelector("#inscritos").innerText == "15") _index = parseInt(_d.querySelector("#totalArquivo").innerText)
+            else _index = parseInt(_d.querySelector("#totalArquivo").innerText) -1
+
+            _corSelecionada = (_index) % _cores.length;
+            
+            if(parseInt(_d.querySelector("#totalArquivo").innerText) == 0) _corSelecionada = 0;
+         
+            _d.querySelector("#corCadastrando").style.background = _cores[_corSelecionada];
+        }
+
+        
+        updateCorSelecionada();
+
+        _cores.forEach(item => {
+            let _div = document.createElement("div");
+            _div.style.background = item;
+            _div.className = "grupo";
+            _d.querySelector("#grupos").appendChild(_div);
+        })
+
+        _d.querySelector('.close').addEventListener("click", () => 
+        {
+            $("#message").hide()
+        });
+        
+        _d.querySelector('#salvar').addEventListener("click", async () => 
+        {
+            let [nome,cristao] = [_d.querySelector('#nome').value,_d.querySelector('#cristao').checked];
+
+            await axios.post('/adicionar',{ nome: nome, cristao: cristao ? "SIM" : "NAO"}).then(res => {
+                updateCorSelecionada();
+                _d.querySelector('#message span').innerText = "Pessoa incluida com sucesso.";
+                _d.querySelector("#nome").value = '';
+                _d.querySelector("#cristao").checked = false;
+                $("#message").show();
+            }).catch(err => {
+                _d.querySelector('#message').className = "alert alert-danger alert-dismissible fade";
+                _d.querySelector('#message span').innerText = "Erro de inclusão.";
+                $("#message").show();
+            });
+
+            setTimeout(() => $("#message").hide(), 4000);
+        });
+
+        socket.on('add', (data) =>{
+            _d.querySelector("#inscritos").innerText = data.inscritos;
+            _d.querySelector("#totalArquivo").innerText = data.totalArquivo;
+            updateCorSelecionada()
+        })
+    
+    </script>
+<% include ./base/footer %> 

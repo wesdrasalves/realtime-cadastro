@@ -1,0 +1,41 @@
+<% include ./base/header %> 
+    <h1>
+        Grupo Atual
+    </h1>
+    <div id="grupoAtual" >
+        <ul id="lista">
+        </ul>
+    </div>
+<script>
+    let _d = document;
+    let _integrantes = "<%= integrantes %>".split(',');
+    let _cores = "<%= cores %>".split(",");
+    let _idGrupo = <%= idGrupo %>;
+    var socket = io("<%= Ip %>");
+
+    if(_idGrupo > 0)
+    {
+        console.log(_idGrupo);
+        console.log(_cores);
+        console.log((_idGrupo  % _cores.length)-1);
+        console.log(_cores[(_idGrupo  % _cores.length)-1]);
+        _d.querySelector("body").style.background = _cores[(_idGrupo -1)% _cores.length];
+
+        _integrantes.forEach(item => {
+            let _li = _d.createElement("li");
+            let _dados = item.split(";");
+            
+            _li.className ="list-group-item";
+            _li.innerText = `${_dados[0]}`;
+
+            _d.querySelector("#lista").appendChild(_li);
+        });
+    }
+
+    socket.on('updateGrupo', (data) =>{
+            location.reload();
+    })
+
+</script>
+
+<% include ./base/footer %> 

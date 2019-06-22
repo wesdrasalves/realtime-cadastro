@@ -1,0 +1,82 @@
+<% include ./base/header %> 
+        <h1>
+            Grupos Cadastrados
+        </h1>
+
+        <div>
+            <div id="menuGrupo">
+                Clique aqui para enviar para o próximo Grupo<a style="margin-left: 30px;" id="proximoGrupo" href="#">Próxima Grupo</a>
+            </div>
+            <div id="legenda">
+                <ul>
+                    <li>
+                        <div style="background:gray"></div><span>Grupos já finalizados</span>
+                    </li>
+                    <li>
+                        <div style="background:green"></div><span></span>Grupo Atual </span>
+                    </li>
+                    <li>
+                        <div style="background:blue"></div><span>Grupos Pendentes</span>
+                    </li>
+                </ul>
+            </div>
+            <div id="lista" class="d-flex flex-wrap justify-content-center align-self-center">
+
+            </div>
+        </div>
+        
+    <script>
+        let _d = document;
+        let _a = "<%= arquivos %>".split(",");
+        let _grupoAtual = <%= GrupoAtual %>;
+        var socket = io("<%= Ip %>");
+        
+
+        let _grupos = _a.map(_g => parseInt(_g.replace(".txt",""))); 
+        _grupos.sort((a, b) => a - b);
+
+        $("#proximoGrupo").click(() => {
+            axios.post('proximoGrupo');
+        })
+
+        _grupos.forEach(item => {
+            let _div = _d.createElement("div");
+            let _a = _d.createElement("a");
+
+            _div.id = item;
+            _div.innerText = item;
+
+            _a.href = `/grupo/${item}`;
+            _a.className = `item-grupo`;
+
+            if(Number.parseInt(item) < _grupoAtual)
+                _div.style.background = "gray";
+            if(Number.parseInt(item) == _grupoAtual)
+                _div.style.background = "green";
+            if(Number.parseInt(item) > _grupoAtual)
+                _div.style.background = "blue";                    
+        
+            _a.appendChild(_div);
+
+            _d.querySelector("#lista").appendChild(_a);
+        });
+
+        socket.on('updateGrupo', (data) =>{
+            location.reload();
+
+            // let _divs = _d.querySelectorAll("#lista div");
+
+            // _divs.forEach(_itemDiv => {
+            //     if(Number.parseInt(_itemDiv.id) < data.GrupoAtual)
+            //         _itemDiv.style.background = "gray";
+            //     if(Number.parseInt(_itemDiv.id) == data.GrupoAtual)
+            //             _itemDiv.style.background = "green";
+            //     if(Number.parseInt(_itemDiv.id) > data.GrupoAtual)
+            //             _itemDiv.style.background = "blue";                    
+            // })
+
+        })
+        
+        
+    </script>
+<% include ./base/footer %> 
