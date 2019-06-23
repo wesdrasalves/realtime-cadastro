@@ -1,1 +1,1 @@
-module.exports = ['red', 'blue', 'yellow', 'green', 'gray'];
+module.exports = ['red', 'orange', 'yellow', 'green', 'blue'];
