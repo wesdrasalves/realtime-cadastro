@@ -17,16 +17,24 @@ routes.get('/', async (req, res) => {
                     })
 });
 
+routes.get('/updateInfo', async (req,res) => 
+{
+    res.json(await IndexController.PaginaInicial(req,res));
+})
+
 routes.get('/atual', IndexController.Atual);
 
 routes.get('/grupos', GrupoController.Grupos);
+
+routes.get('/agendados', GrupoController.Agendados);
+
+routes.get('/grupoAgendado/:idGrupo', GrupoController.GrupoAgendadoById);
 
 routes.post('/proximoGrupo', GrupoController.ProximoGrupo);
 
 routes.get('/grupo/:idGrupo', GrupoController.GrupoById);
 
 routes.post('/adicionar', IndexController.Incluir);
-
 
 
 module.exports = routes;

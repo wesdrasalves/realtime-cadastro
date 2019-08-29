@@ -20,7 +20,7 @@
                 </div>
             </div>
             <div id="cadastro">
-                <div id="corCadastrando"></div>
+				<div id="corCadastrando"></div>
                 <div>
                     <label>Nome</label>
                     <input type="text" id="nome" name="nome"/>
@@ -36,6 +36,7 @@
         let _d = document;
         let _cores = "<%= cores %>".split(",");
         let _corSelecionada;
+		let _nomeCor = "";
         var socket = io("<%= Ip %>");
 
         $("#message").hide();
@@ -52,6 +53,28 @@
             if(parseInt(_d.querySelector("#totalArquivo").innerText) == 0) _corSelecionada = 0;
          
             _d.querySelector("#corCadastrando").style.background = _cores[_corSelecionada];
+			
+			switch(_cores[_corSelecionada])
+			{
+				case 'red': 
+					_nomeCor = "Vermelho";
+					break;
+				case 'orange': 
+					_nomeCor = "Laranja";
+					break;
+				case 'blue': 
+					_nomeCor = "Azul";
+					break;
+				case 'green': 
+					_nomeCor = "Verde";
+					break;
+				case 'yellow': 
+					_nomeCor = "Amarelo";
+					break;					
+			}
+			
+			_d.querySelector("#corCadastrando").innerText = _nomeCor;
+			
         }
 
         
@@ -73,25 +96,43 @@
         {
             let [nome,cristao] = [_d.querySelector('#nome').value,_d.querySelector('#cristao').checked];
 
-            await axios.post('/adicionar',{ nome: nome, cristao: cristao ? "SIM" : "NAO"}).then(res => {
-                updateCorSelecionada();
-                _d.querySelector('#message span').innerText = "Pessoa incluida com sucesso.";
-                _d.querySelector("#nome").value = '';
-                _d.querySelector("#cristao").checked = false;
-                $("#message").show();
-            }).catch(err => {
-                _d.querySelector('#message').className = "alert alert-danger alert-dismissible fade";
-                _d.querySelector('#message span').innerText = "Erro de inclusão.";
-                $("#message").show();
-            });
+			if(nome == "")
+			{
+				_d.querySelector('#message').className = "alert alert-danger alert-dismissible fade show";
+				_d.querySelector('#message span').innerText = "O nome não foi preenchido e é Obrigatório.";
+				$("#message").show();
+			}
+			else{
+				
+				_d.querySelector('#salvar').disabled = true;
+				
+				await axios.post('/adicionar',{ nome: nome, cristao: cristao ? "SIM" : "NAO"}).then(res => {
+					updateCorSelecionada();
+					_d.querySelector('#message span').innerText = "Pessoa incluida com sucesso.";
+					_d.querySelector('#message').className = "alert alert-success alert-dismissible fade show";					
+					_d.querySelector("#nome").value = '';
+					_d.querySelector("#cristao").checked = false;
+					$("#message").show();
+				}).catch(err => {
+					_d.querySelector('#message').className = "alert alert-danger alert-dismissible fade show";
+					_d.querySelector('#message span').innerText = "Erro de inclusão.";
+					$("#message").show();
+				});
+				
+				_d.querySelector('#salvar').disabled = false;
 
-            setTimeout(() => $("#message").hide(), 4000);
+			}
+				
+			setTimeout(() => $("#message").hide(), 4000);			
+
         });
 
         socket.on('add', (data) =>{
-            _d.querySelector("#inscritos").innerText = data.inscritos;
-            _d.querySelector("#totalArquivo").innerText = data.totalArquivo;
-            updateCorSelecionada()
+            axios.get('/updateInfo').then(res => {
+                _d.querySelector("#inscritos").innerText = res.data.inscritos;
+                _d.querySelector("#totalArquivo").innerText = res.data.totalArquivos;
+                updateCorSelecionada()
+            });
         })
     
     </script>

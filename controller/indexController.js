@@ -4,6 +4,7 @@ const Paths = require('../domain/paths');
 const TotalPessoasGrupo = 15;
 const cores = require('../domain/cores');
 
+
 const getLength = () =>
 {
     var x = fs.readdirSync(Paths.PathPadrao);
@@ -40,6 +41,11 @@ const PaginaInicial  = async (req,res) =>
     else{
         req.session.inscritos = 0;
     }
+
+    return {
+        totalArquivos: req.session.totalArquivo,
+        inscritos: req.session.inscritos,
+    }
 }
 
 const Incluir = async (req,res) =>
@@ -54,16 +60,33 @@ const Incluir = async (req,res) =>
     if(req.session.inscritos % TotalPessoasGrupo == 0)
         _arquivo++;
 
+	
+
     _fileName = path.resolve(Paths.PathPadrao,`${_arquivo}.txt`);
 
     try{
 
+		if(req.session.inscritos == TotalPessoasGrupo)
+			if(fs.existsSync(path.resolve(Paths.PathAgendados,`${_arquivo}.txt`)))
+			{
+				fs.copyFileSync(path.resolve(Paths.PathAgendados,`${_arquivo}.txt`), _fileName);
+				//fs.unlink(path.resolve(Paths.PathAgendados,`${_arquivo}.txt`));
+			}
+	
         fs.appendFileSync(_fileName, `${req.body.nome};${req.body.cristao}\r\n`);
 
         if(req.session.inscritos == TotalPessoasGrupo)
         {
             req.session.totalArquivo++;
-            req.session.inscritos = 1;
+			
+			let _dataLine = fs.readFileSync(_fileName);
+			
+			let _dados = _dataLine.toString("utf8");
+			_dados = _dados.split('\r\n');
+			
+			
+            req.session.inscritos = _dados.length;
+			
         }
         else
             req.session.inscritos++;

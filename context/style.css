@@ -8,6 +8,13 @@ html, body{
 
 h1,h2,h3{
     color: #FFF;
+    background: gray;
+    padding: 20px 10px;
+}
+
+ul{
+    margin-left: 0px;
+    padding-left: 0px;
 }
 
 #cadastro
@@ -50,9 +57,14 @@ h1,h2,h3{
     font-size: 35px;
     font-weight: bold;
 }
+
+
 #corCadastrando{
-    height: 30px;
     width: 100%;
+	font-size:30px;
+	padding: 20px 20px;
+	font-weight:bold;
+	color:#FFF;
 }
 
 #grupos{
@@ -86,8 +98,8 @@ h1,h2,h3{
 }
 
 .item-grupo{
-    width: 100px;
-    height: 100px;
+    width: 98px;
+    height: 80px;
     text-align: center;
     background: #FFF;
     margin:20px 20px;

@@ -1,6 +1,6 @@
 <% include ./base/header %> 
     <h1>
-        Grupo Atual
+        Grupo Atual - <%= idGrupo %> <span id="horario"/>
     </h1>
     <div id="grupoAtual" >
         <ul id="lista">
@@ -11,15 +11,30 @@
     let _integrantes = "<%= integrantes %>".split(',');
     let _cores = "<%= cores %>".split(",");
     let _idGrupo = <%= idGrupo %>;
+    let _horario = "";
     var socket = io("<%= Ip %>");
 
+    function calcHorario(grupo){
+        let _data = new Date();
+        _data = new Date(`${_data.getMonth()+1}/${_data.getDate()}/${_data.getFullYear()}`);
+        _data = new Date(_data.getTime()+ ((600000*6) * 19));
+
+        if(_data.getDay() == 5)
+            _data = new Date(_data.getTime()+ (600000*3));
+
+        _data = new Date(_data.getTime() + ((600000*1) * (grupo-1)));    
+        _horario = `${_data.getHours()}:${_data.getMinutes()}`; 
+
+        return _horario;
+    }
+    
     if(_idGrupo > 0)
     {
-        console.log(_idGrupo);
-        console.log(_cores);
-        console.log((_idGrupo  % _cores.length)-1);
-        console.log(_cores[(_idGrupo  % _cores.length)-1]);
+        
         _d.querySelector("body").style.background = _cores[(_idGrupo -1)% _cores.length];
+		_d.querySelector("html").style.background = _cores[(_idGrupo -1)% _cores.length];
+
+		_d.querySelector("#horario").innerText = `(${calcHorario(_idGrupo)})`;
 
         _integrantes.forEach(item => {
             let _li = _d.createElement("li");

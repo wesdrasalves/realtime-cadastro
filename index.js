@@ -56,5 +56,5 @@ app.use(require('./routes'));
             
 
 server.listen(3000, ()=>{
-    console.log('Ready localhost:3000');
+    console.log(`Rodando em ${_ip} para sair precione CTRL + C`);
 });

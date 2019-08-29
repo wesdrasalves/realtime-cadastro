@@ -1,0 +1,41 @@
+<% include ./base/header %> 
+        <h1>
+            Grupos Cadastrados
+        </h1>
+        <div>
+            <div id="lista" class="d-flex flex-wrap justify-content-center align-self-center">
+            </div>
+        </div>
+    <script>
+        let _d = document;
+        let _a = "<%= arquivos %>".split(",");
+        var socket = io("<%= Ip %>");
+        
+
+        let _grupos = _a.map(_g => parseInt(_g.replace(".txt",""))); 
+        _grupos.sort((a, b) => a - b);
+
+        $("#proximoGrupo").click(() => {
+            axios.post('proximoGrupo');
+        })
+
+        _grupos.forEach(item => {
+            let _div = _d.createElement("div");
+            let _a = _d.createElement("a");
+
+            _div.id = item;
+            _div.innerText = item;
+
+            _div.style.background = "gray";
+            
+            _a.href = `/grupoAgendado/${item}`;
+            _a.className = `item-grupo`;
+        
+            _a.appendChild(_div);
+
+            _d.querySelector("#lista").appendChild(_a);
+        });
+        
+        
+    </script>
+<% include ./base/footer %> 
